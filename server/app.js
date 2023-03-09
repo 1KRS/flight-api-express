@@ -63,12 +63,21 @@ app.get('/api/flight', (req, res) => {
     return response
   }
 
+  let routeAndFlights = {
+    route: '',
+    flights: [],
+  }
+
   if (filterBy === 'price') {
     getFlights()
       .then( (response) => {
-        const filteredFlights = response.data
+        const initialFilteredFlights = response.data
           // All filtered flights based on departure and arrival locations
           .filter( flight => flight.departureDestination.toLowerCase() === from && flight.arrivalDestination.toLowerCase() === to )[0]
+          
+          routeAndFlights['route'] = initialFilteredFlights.route_id 
+          
+        const finalFilteredFlights = initialFilteredFlights
           // All itineraries serving this route
           .itineraries
           // Filtered flights based on departure / arrival date
@@ -80,18 +89,21 @@ app.get('/api/flight', (req, res) => {
           // Sorted flights base price
           .sort((a, b) => maxPrice ? (a.prices.adult*adults + a.prices.child*children) - (b.prices.adult*adults + b.prices.child*children) : (b.prices.adult*adults + b.prices.child*children) - (a.prices.adult*adults + a.prices.child*children))
           
-          console.log('Flights:') 
-          const fls = () => filteredFlights.map(flight => console.log(flight));
-          fls()
-          res.json(filteredFlights)
+          routeAndFlights['flights'] = finalFilteredFlights
+          
+          console.log('Route And Flights', routeAndFlights)
+          res.json(finalFilteredFlights)
       })
   } else if (filterBy === 'duration') {
-    // res.send('Not yet implemented')
     getFlights()
       .then( (response) => {
-        const filteredFlights = response.data
+        const initialFilteredFlights = response.data
           // All filtered flights based on departure and arrival locations
           .filter( flight => flight.departureDestination.toLowerCase() === from && flight.arrivalDestination.toLowerCase() === to )[0]
+          
+          routeAndFlights['route'] = initialFilteredFlights.route_id 
+          
+        const finalFilteredFlights = initialFilteredFlights
           // All itineraries serving this route
           .itineraries
           // Filtered flights based on departure / arrival date
@@ -103,18 +115,22 @@ app.get('/api/flight', (req, res) => {
           // Sorted flights base on departure / arrival times
           .sort((a, b) => departureAt ? DateTime.fromISO(a.departureAt).hour - DateTime.fromISO(b.departureAt).hour : arrivalAt ? DateTime.fromISO(b.arrivalAt).hour - DateTime.fromISO(a.arrivalAt).hour : a === b)
         
-          console.log('Flights:') 
-          const fls = () => filteredFlights.map(flight => console.log(flight));
-          fls()
-          res.json(filteredFlights)
+        routeAndFlights['flights'] = finalFilteredFlights
+        
+        console.log('Route And Flights', routeAndFlights)
+        res.json(finalFilteredFlights)
       })
       .catch((err) => {console.log(err)});
   } else if (filterBy === 'time') {
     getFlights()
       .then( (response) => {
-        const filteredFlights = response.data
+        const initialFilteredFlights = response.data
           // All filtered flights based on departure and arrival locations
           .filter( flight => flight.departureDestination.toLowerCase() === from && flight.arrivalDestination.toLowerCase() === to )[0]
+          
+          routeAndFlights['route'] = initialFilteredFlights.route_id 
+          
+        const finalFilteredFlights = initialFilteredFlights
           // All itineraries serving this route
           .itineraries
           // Filtered flights based on departure / arrival date
@@ -126,10 +142,10 @@ app.get('/api/flight', (req, res) => {
           // Sorted flights base on departure / arrival times
           .sort((a, b) => departureAt ? DateTime.fromISO(a.departureAt).hour - DateTime.fromISO(b.departureAt).hour : arrivalAt ? DateTime.fromISO(b.arrivalAt).hour - DateTime.fromISO(a.arrivalAt).hour : a === b)
           
-        console.log('Flights:') 
-        const fls = () => filteredFlights.map(flight => console.log(flight));
-        fls()
-        res.json(filteredFlights)
+        routeAndFlights['flights'] = finalFilteredFlights
+        
+        console.log('Route And Flights', routeAndFlights)
+        res.json(finalFilteredFlights)
       })
       .catch((err) => {console.log(err)});
   }
