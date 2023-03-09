@@ -66,8 +66,7 @@ app.get('/api/flight', (req, res) => {
   if (filterBy === 'price') {
     getFlights()
       .then( (response) => {
-        const allFlights = response.data
-        const allSpecificFlights = allFlights
+        const filteredFlights = response.data
           // All filtered flights based on departure and arrival locations
           .filter( flight => flight.departureDestination.toLowerCase() === from && flight.arrivalDestination.toLowerCase() === to )[0]
           // All itineraries serving this route
@@ -81,17 +80,16 @@ app.get('/api/flight', (req, res) => {
           // Sorted flights base price
           .sort((a, b) => maxPrice ? (a.prices.adult*adults + a.prices.child*children) - (b.prices.adult*adults + b.prices.child*children) : (b.prices.adult*adults + b.prices.child*children) - (a.prices.adult*adults + a.prices.child*children))
           
-        console.log('Flights:') 
-        const fls = () => allSpecificFlights.map(flight => console.log(flight));
-        fls()
-        res.json(allSpecificFlights)
+          console.log('Flights:') 
+          const fls = () => filteredFlights.map(flight => console.log(flight));
+          fls()
+          res.json(filteredFlights)
       })
   } else if (filterBy === 'duration') {
     // res.send('Not yet implemented')
     getFlights()
       .then( (response) => {
-        const allFlights = response.data
-        const allSpecificFlights = allFlights
+        const filteredFlights = response.data
           // All filtered flights based on departure and arrival locations
           .filter( flight => flight.departureDestination.toLowerCase() === from && flight.arrivalDestination.toLowerCase() === to )[0]
           // All itineraries serving this route
@@ -105,17 +103,16 @@ app.get('/api/flight', (req, res) => {
           // Sorted flights base on departure / arrival times
           .sort((a, b) => departureAt ? DateTime.fromISO(a.departureAt).hour - DateTime.fromISO(b.departureAt).hour : arrivalAt ? DateTime.fromISO(b.arrivalAt).hour - DateTime.fromISO(a.arrivalAt).hour : a === b)
         
-        console.log('Flights:') 
-        const fls = () => allSpecificFlights.map(flight => console.log(flight));
-        fls()
-        res.json(allSpecificFlights)
+          console.log('Flights:') 
+          const fls = () => filteredFlights.map(flight => console.log(flight));
+          fls()
+          res.json(filteredFlights)
       })
       .catch((err) => {console.log(err)});
   } else if (filterBy === 'time') {
     getFlights()
       .then( (response) => {
-        const allFlights = response.data
-        const allSpecificFlights = allFlights
+        const filteredFlights = response.data
           // All filtered flights based on departure and arrival locations
           .filter( flight => flight.departureDestination.toLowerCase() === from && flight.arrivalDestination.toLowerCase() === to )[0]
           // All itineraries serving this route
@@ -130,9 +127,9 @@ app.get('/api/flight', (req, res) => {
           .sort((a, b) => departureAt ? DateTime.fromISO(a.departureAt).hour - DateTime.fromISO(b.departureAt).hour : arrivalAt ? DateTime.fromISO(b.arrivalAt).hour - DateTime.fromISO(a.arrivalAt).hour : a === b)
           
         console.log('Flights:') 
-        const fls = () => allSpecificFlights.map(flight => console.log(flight));
+        const fls = () => filteredFlights.map(flight => console.log(flight));
         fls()
-        res.json(allSpecificFlights)
+        res.json(filteredFlights)
       })
       .catch((err) => {console.log(err)});
   }
@@ -146,7 +143,6 @@ app.get('/api/flight/:routeID/:flightID', (req, res) => {
       .itineraries
       .filter( flight => flight.flight_id === req.params.flightID)[0]
 
-      // .find(route => route.map(itinerary => route.itineraries.map(flight => flight.flight_id === req.params.flightID)))
       res.json(flight)
     })
     .catch((err) => {console.log(err)});
