@@ -3,7 +3,7 @@ import express from 'express';
 import { DateTime } from "luxon";
 
 const app = express();
-const port = 8000;
+const port = 5000;
 
 app.get('/', (req, res) => {
   res.send('Hello Traveller!');
@@ -142,7 +142,10 @@ app.get('/api/flight/:routeID/:flightID', (req, res) => {
 
   const flight = axios.get('https://raw.githubusercontent.com/saltstudy/pgp-test-flightFinder-json/main/data.json')
     .then( (response) => {
-      const flight = response.data.filter( route => route.route_id === req.params.routeID )
+      const flight = response.data.filter( route => route.route_id === req.params.routeID )[0]
+      .itineraries
+      .filter( flight => flight.flight_id === req.params.flightID)[0]
+
       // .find(route => route.map(itinerary => route.itineraries.map(flight => flight.flight_id === req.params.flightID)))
       res.json(flight)
     })
